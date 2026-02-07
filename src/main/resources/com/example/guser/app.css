@@ -1,0 +1,561 @@
+.root {
+    -fx-font-family: "Segoe UI", "Inter", "Arial";
+    -fx-background-color: #0f1020;
+}
+
+.bg {
+    -fx-background-color: linear-gradient(to bottom right, #231942, #5E548E, #9F86C0, #BE95C4, #E0B1CB);
+}
+
+.glass {
+    -fx-background-color: rgba(255,255,255,0.12);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(255,255,255,0.22);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.28), 26, 0.2, 0, 10);
+}
+
+.card {
+    -fx-background-color: rgba(255,255,255,0.94);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(0,0,0,0.08);
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.16), 24, 0.2, 0, 8);
+}
+
+.brand {
+    -fx-fill: white;
+    -fx-font-size: 30px;
+    -fx-font-weight: 900;
+}
+
+.h1 {
+    -fx-fill: #111827;
+    -fx-font-size: 22px;
+    -fx-font-weight: 900;
+}
+
+.h2 {
+    -fx-fill: #231942;
+    -fx-font-size: 14px;
+    -fx-font-weight: 900;
+}
+
+.muted {
+    -fx-fill: rgba(255,255,255,0.9);
+    -fx-text-fill: rgba(255,255,255,0.9);
+}
+
+.muted-dark {
+    -fx-fill: #6B7280;
+    -fx-text-fill: #6B7280;
+}
+
+.label {
+    -fx-text-fill: #374151;
+    -fx-font-weight: 800;
+}
+
+.input {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.16);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 12 10 12;
+}
+
+.textarea {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.16);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.btn {
+    -fx-background-color: #231942;
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-background-radius: 999;
+    -fx-padding: 10 14 10 14;
+}
+
+.btn:hover { -fx-background-color: #5E548E; }
+
+.btn-soft {
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-background-radius: 999;
+    -fx-padding: 8 12 8 12;
+}
+
+.pill {
+    -fx-background-color: rgba(255,255,255,0.16);
+    -fx-background-radius: 999;
+    -fx-padding: 6 10 6 10;
+}
+
+.error {
+    -fx-text-fill: #B91C1C;
+    -fx-font-weight: 900;
+}
+
+/* Inline validation (PseudoClass "error") */
+.text-field:error,
+.password-field:error,
+.text-area:error,
+.combo-box-base:error {
+    -fx-border-color: #EF4444;
+    -fx-border-width: 2;
+    -fx-background-insets: 0;
+}
+
+/* Chips */
+.chips-wrap {
+    -fx-padding: 6 0 0 0;
+}
+
+.chip {
+    -fx-background-color: rgba(35,25,66,0.10);
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: rgba(35,25,66,0.22);
+    -fx-padding: 6 10 6 10;
+    -fx-spacing: 8;
+    -fx-alignment: center-left;
+}
+
+.chip-label {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+}
+
+.chip-x {
+    -fx-background-color: transparent;
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-padding: 0 6 0 6;
+    -fx-cursor: hand;
+}
+
+.chip-x:hover {
+    -fx-text-fill: #5E548E;
+}
+
+/* Suggestions list */
+.suggest {
+    -fx-background-color: white;
+    -fx-border-color: rgba(0,0,0,0.12);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+/* Preview */
+.preview-title {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+}
+
+.preview-card {
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-background-radius: 16;
+    -fx-border-radius: 16;
+    -fx-border-color: rgba(255,255,255,0.18);
+    -fx-padding: 14;
+}
+
+.preview-name {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 15px;
+}
+
+.preview-role {
+    -fx-text-fill: rgba(255,255,255,0.92);
+    -fx-font-weight: 900;
+    -fx-background-color: rgba(255,255,255,0.14);
+    -fx-background-radius: 999;
+    -fx-padding: 4 10 4 10;
+}
+
+.preview-primary {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 14px;
+}
+
+.preview-sub {
+    -fx-text-fill: rgba(255,255,255,0.88);
+    -fx-font-weight: 700;
+}
+
+.preview-small {
+    -fx-text-fill: rgba(255,255,255,0.82);
+}
+
+/* =========================================================
+   Carrieri Profile — LinkedIn-like + Carrieri branding
+   (scoped to .prf-*)
+   ========================================================= */
+
+.prf-bg {
+    -fx-background-color: #f3f2ef; /* LinkedIn-ish */
+}
+
+/* ScrollPane background + viewport must be transparent */
+.prf-scroll { -fx-background-color: transparent; }
+.prf-scroll > .viewport { -fx-background-color: transparent; }
+
+.prf-page { -fx-background-color: transparent; }
+.prf-container { -fx-max-width: 1120; -fx-min-width: 860; }
+
+.prf-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: #e0dfdc;
+    -fx-border-radius: 12;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(three-pass-box, rgba(16,24,40,0.06), 18, 0, 0, 6);
+}
+
+/* Header */
+.prf-headerCard { -fx-padding: 0; }
+.prf-cover {
+    -fx-background-radius: 12 12 0 0;
+    -fx-background-color: linear-gradient(to right, #6d5efc, #22c1c3); /* your branding */
+}
+.prf-headerBody { -fx-padding: 12 14 14 14; }
+
+.prf-avatarWrap { -fx-translate-y: -30; }
+.prf-avatarRing { -fx-fill: rgba(0,0,0,0.06); }
+
+/* Typography */
+.prf-h1 { -fx-font-size: 18px; -fx-font-weight: 800; -fx-text-fill: #111827; }
+.prf-subtitle { -fx-font-size: 13px; -fx-text-fill: #374151; }
+.prf-meta { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
+
+.prf-cardTitle { -fx-font-size: 14px; -fx-font-weight: 800; -fx-text-fill: #111827; }
+.prf-label { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
+
+.prf-value { -fx-text-fill: #111827; -fx-font-size: 13px; }
+.prf-paragraph { -fx-text-fill: #111827; -fx-font-size: 13px; -fx-line-spacing: 2px; }
+
+.prf-linkValue { -fx-text-fill: #0a66c2; -fx-font-size: 13px; }
+.prf-linkValue:hover { -fx-underline: true; }
+
+.prf-muted { -fx-text-fill: #6b7280; }
+.prf-error { -fx-text-fill: #b42318; -fx-font-weight: 800; }
+
+/* Buttons */
+.prf-btn {
+    -fx-background-radius: 999;
+    -fx-padding: 7 14 7 14;
+    -fx-font-weight: 800;
+}
+
+.prf-miniBtn { -fx-padding: 6 12 6 12; }
+
+.prf-btnPrimary {
+    -fx-background-color: #6d5efc; /* branding primary */
+    -fx-text-fill: white;
+}
+.prf-btnPrimary:hover { -fx-background-color: #5a4ff0; }
+
+.prf-btnSoft {
+    -fx-background-color: rgba(17,24,39,0.04);
+    -fx-text-fill: #111827;
+    -fx-border-color: rgba(17,24,39,0.12);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+}
+.prf-btnSoft:hover { -fx-background-color: rgba(17,24,39,0.06); }
+
+.prf-linkBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0a66c2;
+    -fx-padding: 0;
+}
+.prf-linkBtn:hover { -fx-underline: true; }
+
+/* Pencil icon button like LinkedIn */
+.prf-iconBtn {
+    -fx-background-color: rgba(17,24,39,0.04);
+    -fx-text-fill: #111827;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: rgba(17,24,39,0.10);
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+}
+.prf-iconBtn:hover { -fx-background-color: rgba(109,94,252,0.12); -fx-border-color: rgba(109,94,252,0.22); }
+
+/* Editors: TextField + TextArea match */
+.prf-editorField {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cfd3d7;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 8;
+    -fx-text-fill: #111827;
+    -fx-prompt-text-fill: #9ca3af;
+}
+.prf-editorField:focused { -fx-border-color: #6d5efc; }
+
+/* TextArea needs inner background + .content styling to match. [web:242][web:251] */
+.prf-editorArea {
+    -fx-border-color: #cfd3d7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+
+    -fx-text-fill: #111827;
+    -fx-prompt-text-fill: #9ca3af;
+
+    -fx-control-inner-background: #ffffff;
+}
+.prf-editorArea .content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+}
+.prf-editorArea:focused { -fx-border-color: #6d5efc; }
+
+/* Skill pills (view) */
+.prf-chip {
+    -fx-padding: 6 10 6 10;
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(17,24,39,0.04);
+    -fx-border-color: rgba(17,24,39,0.12);
+    -fx-border-radius: 999;
+    -fx-text-fill: #111827;
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+/* =========================
+   NAV (reusable component)
+   Branding: #6d5efc -> #22c1c3
+   ========================= */
+
+.navBar {
+    -fx-background-color: rgba(255,255,255,0.92);
+    -fx-border-color: #e0dfdc;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 14 10 14;
+    -fx-effect: dropshadow(three-pass-box, rgba(16,24,40,0.06), 18, 0, 0, 6);
+}
+
+.navBrand {
+    -fx-font-size: 16px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #111827;
+}
+
+.navBrandDot {
+    -fx-min-width: 10;
+    -fx-min-height: 10;
+    -fx-max-width: 10;
+    -fx-max-height: 10;
+    -fx-background-radius: 999;
+    -fx-background-color: linear-gradient(to right, #6d5efc, #22c1c3);
+}
+
+.navIconBtn {
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(17,24,39,0.06);
+    -fx-border-color: rgba(17,24,39,0.12);
+    -fx-border-radius: 999;
+    -fx-font-weight: 900;
+    -fx-padding: 6 10 6 10;
+}
+
+.navSearch {
+    -fx-pref-width: 320;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-background-color: rgba(17,24,39,0.05);
+    -fx-border-color: rgba(17,24,39,0.10);
+    -fx-padding: 8 14 8 14;
+}
+
+.navLinkBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #111827;
+    -fx-font-weight: 800;
+    -fx-padding: 6 10 6 10;
+    -fx-background-radius: 999;
+}
+
+.navLinkBtn:hover { -fx-background-color: rgba(109,94,252,0.10); }
+
+.navLinkBtnActive {
+    -fx-background-color: rgba(109,94,252,0.16);
+    -fx-text-fill: #2f2af0;
+}
+
+.navAvatar { -fx-fill: rgba(0,0,0,0.08); }
+.navName { -fx-text-fill: #111827; -fx-font-weight: 800; }
+
+.navLogoutBtn {
+    -fx-background-radius: 999;
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(17,24,39,0.18);
+    -fx-border-radius: 999;
+    -fx-text-fill: #111827;
+    -fx-font-weight: 800;
+    -fx-padding: 6 12 6 12;
+}
+
+/* =========================
+   PROFILE (LinkedIn-like)
+   ========================= */
+
+.prf-bg { -fx-background-color: #f3f2ef; }
+
+.prf-scroll { -fx-background-color: transparent; }
+.prf-scroll > .viewport { -fx-background-color: transparent; }
+
+.prf-page { -fx-background-color: transparent; }
+
+.prf-container {
+    -fx-max-width: 1120;
+    -fx-min-width: 860;
+}
+
+.prf-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: #e0dfdc;
+    -fx-border-radius: 12;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(three-pass-box, rgba(16,24,40,0.06), 18, 0, 0, 6);
+}
+
+.prf-headerCard { -fx-padding: 0; }
+
+.prf-cover {
+    -fx-background-radius: 12 12 0 0;
+    -fx-background-color: linear-gradient(to right, #6d5efc, #22c1c3);
+}
+
+.prf-headerBody { -fx-padding: 12 14 14 14; }
+
+.prf-avatarWrap { -fx-translate-y: -30; }
+.prf-avatarRing { -fx-fill: rgba(0,0,0,0.06); }
+
+.prf-h1 { -fx-font-size: 18px; -fx-font-weight: 900; -fx-text-fill: #111827; }
+.prf-subtitle { -fx-font-size: 13px; -fx-text-fill: #374151; }
+.prf-meta { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
+
+.prf-cardTitle { -fx-font-size: 14px; -fx-font-weight: 900; -fx-text-fill: #111827; }
+.prf-label { -fx-font-size: 12px; -fx-text-fill: #6b7280; }
+
+.prf-value { -fx-text-fill: #111827; -fx-font-size: 13px; }
+.prf-paragraph { -fx-text-fill: #111827; -fx-font-size: 13px; -fx-line-spacing: 2px; }
+
+.prf-linkValue { -fx-text-fill: #0a66c2; -fx-font-size: 13px; }
+.prf-linkValue:hover { -fx-underline: true; }
+
+.prf-muted { -fx-text-fill: #6b7280; }
+.prf-error { -fx-text-fill: #b42318; -fx-font-weight: 900; }
+
+.prf-btn {
+    -fx-background-radius: 999;
+    -fx-padding: 7 14 7 14;
+    -fx-font-weight: 900;
+}
+
+.prf-miniBtn { -fx-padding: 6 12 6 12; }
+
+.prf-btnPrimary {
+    -fx-background-color: #6d5efc;
+    -fx-text-fill: white;
+}
+
+.prf-btnPrimary:hover { -fx-background-color: #5a4ff0; }
+
+.prf-btnSoft {
+    -fx-background-color: rgba(17,24,39,0.04);
+    -fx-text-fill: #111827;
+    -fx-border-color: rgba(17,24,39,0.12);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+}
+
+.prf-btnSoft:hover { -fx-background-color: rgba(17,24,39,0.06); }
+
+.prf-linkBtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #0a66c2;
+    -fx-padding: 0;
+    -fx-font-weight: 800;
+}
+
+.prf-linkBtn:hover { -fx-underline: true; }
+
+/* Pencil button */
+.prf-iconBtn {
+    -fx-background-color: rgba(17,24,39,0.04);
+    -fx-text-fill: #111827;
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: rgba(17,24,39,0.10);
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 13px;
+    -fx-font-weight: 900;
+}
+
+.prf-iconBtn:hover {
+    -fx-background-color: rgba(109,94,252,0.12);
+    -fx-border-color: rgba(109,94,252,0.25);
+}
+
+/* Editors (TextField + TextArea match) */
+.prf-editorField {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cfd3d7;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 8;
+    -fx-text-fill: #111827;
+    -fx-prompt-text-fill: #9ca3af;
+}
+
+.prf-editorField:focused { -fx-border-color: #6d5efc; }
+
+/* TextArea needs inner styling too. [web:242][web:251] */
+.prf-editorArea {
+    -fx-border-color: #cfd3d7;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+
+    -fx-text-fill: #111827;
+    -fx-prompt-text-fill: #9ca3af;
+
+    -fx-control-inner-background: #ffffff;
+}
+
+.prf-editorArea .content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+}
+
+.prf-editorArea:focused { -fx-border-color: #6d5efc; }
+
+/* Skill chips */
+.prf-chip {
+    -fx-padding: 6 10 6 10;
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(17,24,39,0.04);
+    -fx-border-color: rgba(17,24,39,0.12);
+    -fx-border-radius: 999;
+    -fx-text-fill: #111827;
+    -fx-font-weight: 900;
+    -fx-font-size: 11px;
+}
+
