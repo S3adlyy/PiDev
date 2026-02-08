@@ -9,6 +9,8 @@ public class Mission {
     private LocalDateTime created_at;
     private Integer created_by_id;
 
+
+
     public Mission() {
     }
 
@@ -67,6 +69,7 @@ public class Mission {
     public void setCreated_by_id(Integer created_by_id) {
         this.created_by_id = created_by_id;
     }
+
 
     @Override
     public String toString() {

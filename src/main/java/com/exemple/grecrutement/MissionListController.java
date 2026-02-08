@@ -7,30 +7,27 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
 import services.MissionService;
 
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 
 public class MissionListController implements Initializable {
 
-    @FXML
-    private TableView<Mission> missionTable;
+    @FXML private TableView<Mission> missionTable;
+    @FXML private TableColumn<Mission, Integer> idColumn;
+    @FXML private TableColumn<Mission, String> descriptionColumn;
+    @FXML private TableColumn<Mission, Integer> scoreColumn;
+    @FXML private TableColumn<Mission, String> creatorColumn;
+    @FXML private TableColumn<Mission, String> dateColumn;
 
-    @FXML
-    private TableColumn<Mission, Integer> idColumn;
-
-    @FXML
-    private TableColumn<Mission, String> descriptionColumn;
-
-    @FXML
-    private TableColumn<Mission, Integer> scoreColumn;
-
-    @FXML
-    private TableColumn<Mission, Integer> creatorColumn;
+    @FXML private Label lblTotalMissions;
+    @FXML private Label lblAvgScore;
+    @FXML private Label lblActiveMissions;
 
     private final MissionService missionService = new MissionService();
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -52,12 +49,33 @@ public class MissionListController implements Initializable {
         descriptionColumn.setStyle("");
         scoreColumn.setStyle("");
         creatorColumn.setStyle("");
+        dateColumn.setStyle("");
 
         // Configure columns with proper property names
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
         scoreColumn.setCellValueFactory(new PropertyValueFactory<>("score_min"));
-        creatorColumn.setCellValueFactory(new PropertyValueFactory<>("created_by_id"));
+
+        // Creator column
+        creatorColumn.setCellValueFactory(cellData -> {
+            Integer creatorId = cellData.getValue().getCreated_by_id();
+            return new javafx.beans.property.SimpleStringProperty(
+                    creatorId != null ? "User #" + creatorId : "Unknown"
+            );
+        });
+
+        // Date column
+        dateColumn.setCellValueFactory(cellData -> {
+            try {
+                if (cellData.getValue().getCreated_at() != null) {
+                    String formattedDate = cellData.getValue().getCreated_at().format(dateFormatter);
+                    return new javafx.beans.property.SimpleStringProperty(formattedDate);
+                }
+                return new javafx.beans.property.SimpleStringProperty("N/A");
+            } catch (Exception e) {
+                return new javafx.beans.property.SimpleStringProperty("N/A");
+            }
+        });
 
         // Set simple cell factories that force black text
         setSimpleCellFactories();
@@ -76,7 +94,7 @@ public class MissionListController implements Initializable {
 
         // Style column headers
         String headerStyle =
-                "-fx-background-color: #4CAF50;" +
+                "-fx-background-color: #0a66c2;" +
                         "-fx-text-fill: white;" +
                         "-fx-font-weight: bold;" +
                         "-fx-font-size: 14px;" +
@@ -87,6 +105,7 @@ public class MissionListController implements Initializable {
         descriptionColumn.setStyle(headerStyle);
         scoreColumn.setStyle(headerStyle);
         creatorColumn.setStyle(headerStyle);
+        dateColumn.setStyle(headerStyle);
     }
 
     private void setSimpleCellFactories() {
@@ -100,7 +119,7 @@ public class MissionListController implements Initializable {
                     setStyle("");
                 } else {
                     setText(String.valueOf(item));
-                    setStyle("-fx-text-fill: black; -fx-alignment: CENTER; -fx-font-weight: bold;");
+                    setStyle("-fx-text-fill: #0a66c2; -fx-alignment: CENTER; -fx-font-weight: bold;");
                 }
             }
         });
@@ -114,7 +133,17 @@ public class MissionListController implements Initializable {
                     setText(null);
                     setStyle("");
                 } else {
-                    setText(item);
+                    // Show first 100 characters
+                    String displayText = item.length() > 100 ? item.substring(0, 100) + "..." : item;
+                    setText(displayText);
+
+                    // Tooltip with full description
+                    if (item.length() > 100) {
+                        Tooltip tooltip = new Tooltip(item);
+                        tooltip.setStyle("-fx-font-size: 12px;");
+                        setTooltip(tooltip);
+                    }
+
                     setStyle("-fx-text-fill: black; -fx-alignment: CENTER_LEFT;");
                 }
             }
@@ -129,7 +158,7 @@ public class MissionListController implements Initializable {
                     setText(null);
                     setStyle("");
                 } else {
-                    setText(String.valueOf(item));
+                    setText(item + "%");
 
                     // Color based on score
                     String color;
@@ -137,8 +166,6 @@ public class MissionListController implements Initializable {
                         color = "#10b981";
                     } else if (item >= 60) {
                         color = "#f59e0b";
-                    } else if (item >= 40) {
-                        color = "#f97316";
                     } else {
                         color = "#ef4444";
                     }
@@ -149,16 +176,31 @@ public class MissionListController implements Initializable {
         });
 
         // Creator Column
-        creatorColumn.setCellFactory(col -> new TableCell<Mission, Integer>() {
+        creatorColumn.setCellFactory(col -> new TableCell<Mission, String>() {
             @Override
-            protected void updateItem(Integer item, boolean empty) {
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
-                    setText("N/A");
-                    setStyle("-fx-text-fill: #666; -fx-alignment: CENTER; -fx-font-style: italic;");
+                    setText(null);
+                    setStyle("");
                 } else {
-                    setText("User #" + item);
+                    setText(item);
                     setStyle("-fx-text-fill: #3b82f6; -fx-alignment: CENTER; -fx-font-weight: bold;");
+                }
+            }
+        });
+
+        // Date Column
+        dateColumn.setCellFactory(col -> new TableCell<Mission, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: #6b7280; -fx-alignment: CENTER; -fx-font-weight: bold;");
                 }
             }
         });
@@ -204,10 +246,9 @@ public class MissionListController implements Initializable {
             missionTable.setItems(
                     FXCollections.observableArrayList(missionService.read())
             );
-            System.out.println("Loaded " + missionService.read().size() + " missions");
 
-            // Debug: print what's loaded
-            debugMissionData();
+            // Calculate stats
+            calculateStats();
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Load Error", e.getMessage());
@@ -215,21 +256,30 @@ public class MissionListController implements Initializable {
         }
     }
 
-    private void debugMissionData() {
+    private void calculateStats() {
         try {
-            System.out.println("=== DEBUG MISSION DATA ===");
-            System.out.println("Table items count: " + (missionTable.getItems() != null ? missionTable.getItems().size() : "null"));
+            int total = missionTable.getItems().size();
+            lblTotalMissions.setText(String.valueOf(total));
 
-            if (missionTable.getItems() != null) {
-                for (Mission m : missionTable.getItems()) {
-                    System.out.println("Mission: ID=" + m.getId() +
-                            ", Desc=" + m.getDescription() +
-                            ", Score=" + m.getScore_min() +
-                            ", Creator=" + m.getCreated_by_id());
-                }
+            // Calculate average score
+            if (total > 0) {
+                double avgScore = missionTable.getItems().stream()
+                        .mapToInt(Mission::getScore_min)
+                        .average()
+                        .orElse(0);
+                lblAvgScore.setText(String.format("%.0f%%", avgScore));
+            } else {
+                lblAvgScore.setText("0%");
             }
+
+            // Count active missions (score > 0)
+            long active = missionTable.getItems().stream()
+                    .filter(m -> m.getScore_min() > 0)
+                    .count();
+            lblActiveMissions.setText(String.valueOf(active));
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error calculating stats: " + e.getMessage());
         }
     }
 
@@ -246,14 +296,7 @@ public class MissionListController implements Initializable {
 
     private void navigateToRenduAdd(Mission mission) {
         try {
-            System.out.println("🚀 Navigating to RenduAdd with Mission:");
-            System.out.println("   ID: " + mission.getId());
-            System.out.println("   Description: " + mission.getDescription());
-            System.out.println("   Min Score: " + mission.getScore_min());
-
-            // Pass the mission ID to RenduAddController
             MissionShellController.getInstance().showRenduAddWithMissionId(mission.getId());
-
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error",
@@ -272,14 +315,16 @@ public class MissionListController implements Initializable {
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirm Deletion");
-        confirm.setHeaderText("Delete Mission ID " + selected.getId());
-        confirm.setContentText("This action cannot be undone.");
+        confirm.setHeaderText("Delete Mission #" + selected.getId());
+        confirm.setContentText("Are you sure you want to delete this mission?\n\nDescription: " +
+                selected.getDescription() + "\nThis action cannot be undone.");
 
         if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
             try {
                 missionService.supprimer(selected.getId());
                 loadMissions();
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Mission deleted successfully!");
+                showAlert(Alert.AlertType.INFORMATION, "Success",
+                        "Mission #" + selected.getId() + " deleted successfully!");
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, "Delete Error", e.getMessage());
             }
@@ -305,6 +350,4 @@ public class MissionListController implements Initializable {
         alert.setContentText(message);
         alert.show();
     }
-
-
 }
