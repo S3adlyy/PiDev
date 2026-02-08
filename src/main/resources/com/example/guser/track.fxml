@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.TrackController"
+      stylesheets="@workspace.css"
+      fx:id="trackDetailPane"
+      spacing="10"
+      visible="false"
+      managed="false">
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Button fx:id="backToTracksBtn" text="← Tracks" onAction="#onBackToTracks"
+                styleClass="prf-linkBtn"/>
+
+        <Label fx:id="trackTitleLabel" text="Track Title" styleClass="wsp-trackTitle"/>
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <ComboBox fx:id="trackVisibilityCombo" prefWidth="140" onAction="#onVisibilityChanged"/>
+        <Button fx:id="createSnapshotBtn" text="Create Snapshot" onAction="#onCreateSnapshot"
+                styleClass="prf-actBtn prf-actSave"/>
+    </HBox>
+
+    <SplitPane fx:id="trackSplitPane" dividerPositions="0.28" styleClass="wsp-split">
+
+        <!-- LEFT: snapshot timeline -->
+        <VBox>
+            <Label text="Snapshots" styleClass="wsp-panelTitle"/>
+            <ListView fx:id="snapshotsListView" styleClass="wsp-timeline"/>
+        </VBox>
+
+        <!-- RIGHT: artifacts + viewer -->
+        <SplitPane fx:id="artifactSplitPane" dividerPositions="0.30" orientation="HORIZONTAL" styleClass="wsp-split">
+
+            <VBox>
+                <Label text="Artifacts" styleClass="wsp-panelTitle"/>
+                <ListView fx:id="artifactsListView" styleClass="wsp-list"/>
+                <Button fx:id="addArtifactBtn" text="Add Artifact" onAction="#onAddArtifact"
+                        styleClass="prf-outlineBtn"/>
+            </VBox>
+
+            <StackPane fx:id="artifactViewerHost" styleClass="wsp-viewerHost">
+                <Label fx:id="viewerPlaceholderLabel" text="Select an artifact" styleClass="prf-muted"/>
+            </StackPane>
+        </SplitPane>
+    </SplitPane>
+
+    <Label fx:id="trackErrorLabel" text="" styleClass="prf-error" visible="false" managed="false"/>
+</VBox>

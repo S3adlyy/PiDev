@@ -24,6 +24,7 @@ public class LoginController {
     public void initialize() {
         userService = new UserService();
         hideError();
+
     }
 
     @FXML

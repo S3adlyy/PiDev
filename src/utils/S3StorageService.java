@@ -9,7 +9,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
-
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import java.nio.file.Path;
 import java.io.File;
 import java.time.Duration;
 
@@ -61,6 +63,14 @@ public class S3StorageService implements AutoCloseable {
 
         PresignedGetObjectRequest presigned = presigner.presignGetObject(presignReq);
         return presigned.url().toExternalForm();
+    }
+    public void downloadToFile(String key, Path targetPath) {
+        GetObjectRequest getReq = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+
+        s3.getObject(getReq, ResponseTransformer.toFile(targetPath));
     }
 
     @Override

@@ -616,16 +616,14 @@
 
                                     </VBox>
 
-                                    <VBox styleClass="prf-card" spacing="10">
-                                        <Label text="Workspace" styleClass="prf-cardTitle"/>
-                                        <Label fx:id="workspaceHintLabel" text="Workspace: coming next." styleClass="prf-muted"/>
-                                    </VBox>
-
                                 </VBox>
 
                                 <VBox spacing="14" GridPane.columnIndex="1"/>
 
                             </GridPane>
+                            <!-- WORKSPACE (FULL WIDTH) -->
+                            <fx:include fx:id="workspaceSection" source="workspace.fxml"/>
+
 
                         </VBox>
                     </VBox>

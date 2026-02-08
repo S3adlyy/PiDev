@@ -12,5 +12,6 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         SceneManager.init(stage);
         SceneManager.switchTo("/com/example/guser/login.fxml", "Carrieri • Sign in");
+        
     }
 }

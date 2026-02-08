@@ -27,4 +27,33 @@ public class S3KeyUtil {
             default -> "application/octet-stream";
         };
     }
+    public static String workspaceArtifactKey(int candidateId, int trackId, int artifactId, String extNoDot) {
+        return "workspace/candidate-" + candidateId +
+                "/track-" + trackId +
+                "/artifact-" + artifactId +
+                "/" + UUID.randomUUID() + "." + extNoDot;
+    }
+
+    public static String workspaceSnapshotTextKey(int candidateId, int trackId, int artifactId, int snapshotId, String extNoDot) {
+        return "workspace/candidate-" + candidateId +
+                "/track-" + trackId +
+                "/artifact-" + artifactId +
+                "/snapshots/" + snapshotId +
+                "/" + UUID.randomUUID() + "." + extNoDot;
+    }
+
+    public static String contentTypeFromExtExtended(String extNoDot) {
+        return switch (extNoDot.toLowerCase()) {
+            case "zip" -> "application/zip";
+            case "pdf" -> "application/pdf";
+            case "txt", "md" -> "text/plain";
+            case "json" -> "application/json";
+            case "mp4" -> "video/mp4";
+            case "mov" -> "video/quicktime";
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "webp" -> "image/webp";
+            default -> "application/octet-stream";
+        };
+    }
 }

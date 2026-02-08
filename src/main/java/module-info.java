@@ -7,6 +7,8 @@ module com.example.guser {
     requires software.amazon.awssdk.services.s3;
     requires software.amazon.awssdk.regions;
     requires software.amazon.awssdk.auth;
+    //requires com.example.guser;
+    requires java.net.http;
 
 
     opens com.example.guser to javafx.fxml;

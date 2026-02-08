@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.guser.controllers.CodeViewerController"
+           stylesheets="@workspace.css"
+           dividerPositions="0.32"
+           fx:id="codeSplitPane"
+           styleClass="wsp-split">
+
+    <VBox>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label text="Files" styleClass="wsp-panelTitle"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="downloadZipBtn" text="Download ZIP" onAction="#onDownloadZip"
+                    styleClass="prf-outlineBtn"/>
+        </HBox>
+
+        <TreeView fx:id="filesTreeView" styleClass="wsp-tree"/>
+
+    </VBox>
+
+    <VBox spacing="8">
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label fx:id="filePathLabel" text="—" styleClass="wsp-panelTitle"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="downloadFileBtn" text="Download file" onAction="#onDownloadFile"
+                    styleClass="prf-outlineBtn"/>
+        </HBox>
+
+        <TextArea fx:id="codeTextArea" editable="false" wrapText="false" styleClass="wsp-codeArea" VBox.vgrow="ALWAYS"/>
+    </VBox>
+</SplitPane>

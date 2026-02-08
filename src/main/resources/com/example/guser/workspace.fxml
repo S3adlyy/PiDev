@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
 
-<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-           stylesheets="@app.css">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.example.guser.controllers.WorkspaceController"
+      stylesheets="@workspace.css"
+      spacing="10">
 
-    <Pane styleClass="bg"/>
+    <VBox styleClass="prf-card wsp-card" spacing="10">
 
-    <VBox spacing="14" styleClass="card" maxWidth="700">
-        <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-        <Text text="Workspace" styleClass="h1"/>
-        <Text text="Coming soon… (we'll build this after profiles)." styleClass="muted-dark"/>
-        <Text text="For now: profiles + S3 are ready." styleClass="muted-dark"/>
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="prf-cardHeader">
+            <Label text="Workspace" styleClass="prf-cardTitle"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="newTrackBtn" text="New Track" onAction="#onNewTrack"
+                    styleClass="prf-outlineBtn"/>
+        </HBox>
+
+        <!-- Track list (always present) -->
+        <VBox fx:id="tracksListPane" spacing="10">
+            <ListView fx:id="tracksListView" styleClass="wsp-list"/>
+        </VBox>
+
+        <!-- Track detail include (hidden by controller until a track is opened) -->
+        <fx:include fx:id="trackSection" source="track.fxml"/>
+
+        <Label fx:id="workspaceErrorLabel" text="" styleClass="prf-error" visible="false" managed="false"/>
     </VBox>
-
-</StackPane>
+</VBox>

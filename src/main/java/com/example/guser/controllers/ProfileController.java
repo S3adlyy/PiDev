@@ -164,6 +164,8 @@ public class ProfileController {
 
     // Workspace
     @FXML private Label workspaceHintLabel;
+    @FXML private WorkspaceController workspaceSectionController;
+
 
     @FXML
     public void initialize() {
@@ -269,6 +271,19 @@ public class ProfileController {
             websiteView.setText(blankToDash(u.getWebsiteurl()));
             orgDescView.setText(blankToDash(u.getDescription()));
 
+            //workspace
+            if ("CANDIDATE".equals(targetUser.getRoles())) {
+                int candidateId = targetUser.getId();
+                int viewerId = SessionContext.getCurrentUser().getId();
+                boolean ownerMode = (viewerId == candidateId);
+
+                if (workspaceSectionController != null) {
+                    workspaceSectionController.initContext(candidateId, viewerId, ownerMode);
+                }
+            }
+
+
+
             // chips
             renderSkillChips(hardSkillsPane, u.getHardskills());
             renderSkillChips(softSkillsPane, u.getSoftskills());
@@ -291,8 +306,6 @@ public class ProfileController {
             String key = isRecruiter ? u.getLogourl() : u.getProfilepic();
             System.out.println("picture get key:" + key);
             Platform.runLater(() -> renderAvatarFromS3Key(key));
-
-            workspaceHintLabel.setText("Workspace: coming next (tracks, files, videos, folders).");
 
             loadPeopleSuggestions();
 
