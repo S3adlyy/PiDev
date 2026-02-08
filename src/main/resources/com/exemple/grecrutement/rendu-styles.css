@@ -321,6 +321,71 @@
 .root.dark-mode .form-combo:focused {
     -fx-border-color: #378fe9;
 }
+/* Mission Description Area */
+.mission-description-area {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 15px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #475569;
+    -fx-font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    -fx-wrap-text: true;
+    -fx-line-spacing: 1.5;
+    -fx-pref-height: 150px;
+}
+
+.mission-description-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.mission-description-area .scroll-pane .viewport {
+    -fx-background-color: #f8fafc;
+}
+
+.mission-description-area .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-background-radius: 4px;
+}
+
+.mission-description-area .scroll-bar:vertical .track {
+    -fx-background-color: #e2e8f0;
+    -fx-background-radius: 4px;
+}
+
+.mission-description-area .scroll-bar:vertical .thumb {
+    -fx-background-color: #94a3b8;
+    -fx-background-radius: 4px;
+}
+
+.mission-description-area .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #64748b;
+}
+
+/* Dark mode support */
+.root.dark-mode .mission-description-area {
+    -fx-background-color: rgba(31, 41, 55, 0.95);
+    -fx-text-fill: #e5e7eb;
+    -fx-border-color: rgba(255, 255, 255, 0.15);
+}
+
+.root.dark-mode .mission-description-area .scroll-pane .viewport {
+    -fx-background-color: rgba(31, 41, 55, 0.95);
+}
+
+.root.dark-mode .mission-description-area .scroll-bar:vertical .track {
+    -fx-background-color: #374151;
+}
+
+.root.dark-mode .mission-description-area .scroll-bar:vertical .thumb {
+    -fx-background-color: #6b7280;
+}
+
+.root.dark-mode .mission-description-area .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #9ca3af;
+}
+
 
 .root.dark-mode .result-label {
     -fx-text-fill: rgba(255, 255, 255, 0.8);

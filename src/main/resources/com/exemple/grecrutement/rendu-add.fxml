@@ -30,22 +30,22 @@
     <VBox styleClass="main-container">
         <!-- Header Section -->
         <VBox styleClass="header-section" spacing="10">
-            <Label text="AI Code Submission" styleClass="main-title"/>
+            <Label text="🤖 AI Code Submission" styleClass="main-title"/>
             <Label text="Submit Python code for AI evaluation" styleClass="sub-title"/>
         </VBox>
 
         <!-- Split Layout Container -->
         <HBox styleClass="split-container" spacing="40">
             <!-- LEFT: Form Section -->
-            <VBox styleClass="form-section" spacing="25" prefWidth="350">
+            <VBox styleClass="form-section" spacing="25" prefWidth="400">
                 <!-- Form Title -->
-                <Label text="Submission Form" styleClass="section-title"/>
+                <Label text="📝 Submission Form" styleClass="section-title"/>
 
                 <!-- Form Fields -->
                 <VBox spacing="20">
                     <!-- Candidate ID -->
                     <VBox spacing="5">
-                        <Label text="ID Candidate" styleClass="field-label"/>
+                        <Label text="👤 Candidate ID" styleClass="field-label"/>
                         <TextField fx:id="txtCandidatId"
                                    promptText="Enter candidate ID"
                                    styleClass="form-field"/>
@@ -53,33 +53,46 @@
 
                     <!-- Mission ID -->
                     <VBox spacing="5">
-                        <Label text="ID Mission" styleClass="field-label"/>
+                        <Label text="🎯 Mission ID" styleClass="field-label"/>
                         <TextField fx:id="txtMissionId"
-                                   promptText="Enter mission ID"
-                                   styleClass="form-field"/>
+                                   promptText="Will be auto-filled when you select a mission"
+                                   styleClass="form-field"
+                                   editable="true"/>
                     </VBox>
 
                     <!-- Mission Type -->
                     <VBox spacing="5">
-                        <Label text="Type Mission" styleClass="field-label"/>
+                        <Label text="📋 Mission Type" styleClass="field-label"/>
                         <ComboBox fx:id="comboMissionType"
                                   promptText="Select mission type"
                                   styleClass="form-combo"/>
                     </VBox>
                 </VBox>
 
+                <!-- Mission Description Display -->
+                <VBox spacing="10" style="-fx-padding: 15px 0;">
+                    <Label text="📄 Mission Details" styleClass="section-title"/>
+
+                    <TextArea fx:id="lblMissionDescription"
+                              editable="false"
+                              wrapText="true"
+                              prefHeight="150"
+                              styleClass="mission-description-area"/>
+                </VBox>
+
                 <!-- Evaluate Button -->
-                <VBox spacing="15" style="-fx-padding: 20px 0;">
+                <VBox spacing="15" style="-fx-padding: 10px 0;">
                     <Button text="🚀 Evaluate with AI"
                             onAction="#evaluer"
-                            styleClass="evaluate-button"/>
+                            styleClass="evaluate-button"
+                            prefWidth="220"/>
 
                     <HBox spacing="10" alignment="CENTER_LEFT">
                         <ProgressIndicator fx:id="progress"
                                            styleClass="progress-indicator"
                                            visible="false"/>
                         <Label fx:id="lblProcessing"
-                               text="Processing..."
+                               text="⏳ Processing..."
                                styleClass="processing-label"
                                visible="false"/>
                     </HBox>
@@ -87,7 +100,7 @@
 
                 <!-- Result -->
                 <Label fx:id="lblResultat"
-                       text="Waiting for code submission..."
+                       text="👉 Waiting for code submission..."
                        styleClass="result-label"
                        wrapText="true"/>
             </VBox>
@@ -95,30 +108,36 @@
             <!-- RIGHT: Code Editor Section -->
             <VBox styleClass="editor-section" spacing="15" prefWidth="600">
                 <!-- Editor Title -->
-                <Label text="Python Code" styleClass="section-title"/>
+                <Label text="💻 Python Code Editor" styleClass="section-title"/>
                 <Label text="Write your solution in Python 3" styleClass="editor-subtitle"/>
 
                 <!-- Code Editor Container -->
                 <VBox styleClass="code-editor-container">
                     <!-- Editor Header -->
                     <HBox styleClass="editor-header">
-                        <Label text="main.py" styleClass="file-name"/>
+                        <Label text="solution.py" styleClass="file-name"/>
                         <HBox HBox.hgrow="ALWAYS"/>
                         <Label text="Python 3" styleClass="language-tag"/>
                     </HBox>
 
                     <!-- Code Editor -->
                     <TextArea fx:id="txtCode"
-                              promptText="# Write your Python solution here"
+                              promptText="# Write your Python solution here&#10;# Example: Add two numbers&#10;&#10;def add(a, b):&#10;    return a + b&#10;&#10;# Read input and call function&#10;if __name__ == '__main__':&#10;    num1 = int(input())&#10;    num2 = int(input())&#10;    print(add(num1, num2))"
                               styleClass="code-editor"/>
                 </VBox>
 
                 <!-- Editor Tips -->
                 <HBox styleClass="editor-tips">
-                    <Label text="💡 Tip: Use Ctrl+Space for autocomplete"
+                    <Label text="💡 Tips: • Press Ctrl+Space for autocomplete • Use Tab for indentation • Test your code before submitting"
                            styleClass="tip-text"/>
                 </HBox>
             </VBox>
+        </HBox>
+
+        <!-- Footer -->
+        <HBox alignment="CENTER" style="-fx-padding: 20px 0 0 0;">
+            <Label text="🔍 Tip: Double-click a mission in Mission List to auto-fill mission details"
+                   style="-fx-text-fill: #64748b; -fx-font-size: 13px; -fx-font-style: italic;"/>
         </HBox>
     </VBox>
 </StackPane>

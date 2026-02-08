@@ -96,4 +96,16 @@ public class MissionService implements IMissionService<Mission> {
         }
         return null;
     }
+
+    public Mission getMissionById(int missionId) {
+        try {
+            return getById(missionId);
+        } catch (SQLException e) {
+            System.err.println("Error fetching mission by ID " + missionId + ": " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 }

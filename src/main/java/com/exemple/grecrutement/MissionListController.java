@@ -246,7 +246,10 @@ public class MissionListController implements Initializable {
 
     private void navigateToRenduAdd(Mission mission) {
         try {
-            System.out.println("Navigating to RenduAdd with Mission ID: " + mission.getId());
+            System.out.println("🚀 Navigating to RenduAdd with Mission:");
+            System.out.println("   ID: " + mission.getId());
+            System.out.println("   Description: " + mission.getDescription());
+            System.out.println("   Min Score: " + mission.getScore_min());
 
             // Pass the mission ID to RenduAddController
             MissionShellController.getInstance().showRenduAddWithMissionId(mission.getId());
@@ -302,4 +305,6 @@ public class MissionListController implements Initializable {
         alert.setContentText(message);
         alert.show();
     }
+
+
 }
