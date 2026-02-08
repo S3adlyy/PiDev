@@ -57,12 +57,30 @@ public class MissionShellController {
     }
 
     // =========================
-    // RENDU NAVIGATION
+    // RENDU NAVIGATION - UPDATED
     // =========================
 
     @FXML
     public void showRenduAdd() {
-        loadView("rendu-add.fxml");
+        showRenduAddWithMissionId(null);
+    }
+
+    public void showRenduAddWithMissionId(Integer missionId) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("rendu-add.fxml")
+            );
+            Node view = loader.load();
+
+            RenduAddController controller = loader.getController();
+            if (missionId != null) {
+                controller.setMissionId(missionId);
+            }
+
+            contentPane.getChildren().setAll(view);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -82,9 +100,5 @@ public class MissionShellController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public void loadViewWithNode(Node view) {
-        contentPane.getChildren().setAll(view);
     }
 }

@@ -38,9 +38,10 @@
 }
 
 .mission-h1 {
-    -fx-fill: white;
-    -fx-font-size: 26px;
-    -fx-font-weight: 900;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;  /* Changed from white to dark gray */
+    -fx-padding: 0 0 20px 0;
 }
 
 .mission-h2 {
@@ -65,13 +66,23 @@
 }
 
 .mission-input {
-    -fx-background-color: rgba(255,255,255,0.07);
-    -fx-border-color: #5E548E;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 12 15;
-    -fx-text-fill: white;
+    -fx-text-fill: black;
+    -fx-control-inner-background: white;
+    -fx-background-color: white;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5px;
+    -fx-padding: 10px;
+    -fx-font-family: 'Monaco', 'Consolas', monospace;
     -fx-font-size: 14px;
+}
+
+.mission-input:focused {
+    -fx-border-color: #4CAF50;
+    -fx-border-width: 2px;
+}
+
+.mission-input .text {
+    -fx-fill: black;
 }
 
 .mission-input:disabled {
@@ -84,11 +95,11 @@
     -fx-border-color: #5E548E;
     -fx-border-radius: 8;
     -fx-background-radius: 8;
-    -fx-text-fill: white;
+    -fx-text-fill: black;  /* Changed from white to black */
 }
 
 .mission-btn {
-    -fx-background-color: #5E548E;
+    -fx-background-color: #4CAF50;
     -fx-text-fill: white;
     -fx-font-weight: 900;
     -fx-background-radius: 6;
@@ -98,7 +109,7 @@
 }
 
 .mission-btn:hover {
-    -fx-background-color: #9F86C0;
+    -fx-background-color: #45a049;
     -fx-scale-x: 1.02;
     -fx-scale-y: 1.02;
     -fx-effect: dropshadow(gaussian, rgba(159,134,192,0.6), 15, 0.3, 0, 5);
@@ -210,59 +221,114 @@
 }
 
 /* =========================
-   TABLE
+   TABLE - FIXED VERSION
    ========================= */
 .mission-table-container {
-    -fx-background-color: rgba(255, 255, 255, 0.03);
+    -fx-background-color: #f5f5f5;  /* Light gray background */
     -fx-background-radius: 12;
-    -fx-border-color: linear-gradient(to right, #5E548E, #9F86C0);
+    -fx-border-color: #ddd;
     -fx-border-width: 1.5;
     -fx-border-radius: 12;
-    -fx-padding: 20;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0.2, 0, 5);
+    -fx-padding: 30px;  /* Fixed from 30 to 30px */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 20, 0.2, 0, 5);
 }
 
 .mission-table {
-    -fx-background-color: rgba(255,255,255,0.05);
-    -fx-border-color: #5E548E;
-    -fx-border-width: 2;
-    -fx-border-radius: 10;
+    -fx-background-color: white;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
 }
 
 .mission-table .column-header {
-    -fx-background-color: #5E548E;
+    -fx-background-color: linear-gradient(to bottom, #4CAF50, #2E7D32);
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 10 5;
-}
-
-.mission-table .table-row-cell {
-    -fx-background-color: transparent;
-    -fx-border-color: rgba(255,255,255,0.05);
-    -fx-border-width: 0 0 1 0;
-}
-
-.mission-table .table-row-cell:odd {
-    -fx-background-color: rgba(255,255,255,0.02);
-}
-
-.mission-table .table-row-cell:hover {
-    -fx-background-color: linear-gradient(to right, rgba(159,134,192,0.1), transparent);
-    -fx-cursor: hand;
-}
-
-.mission-table .table-row-cell:selected {
-    -fx-background-color: linear-gradient(to right, rgba(190,149,196,0.2), rgba(159,134,192,0.1));
-}
-
-.mission-table .table-cell {
-    -fx-text-fill: #E0B1CB;
-    -fx-font-size: 13px;
-    -fx-padding: 10 5;
+    -fx-padding: 12px 15px;
     -fx-border-color: transparent;
 }
 
-.mission-table .table-cell:selected {
+.mission-table .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.mission-table .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent;
+    -fx-text-fill: black;
+}
+
+.mission-table .table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+.mission-table .table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+    -fx-text-fill: black;
+}
+
+.mission-table .table-row-cell:hover {
+    -fx-background-color: #f0f0f0;
+    -fx-text-fill: black;
+}
+
+.mission-table .table-cell {
+    -fx-text-fill: black !important;
+    -fx-font-size: 14px;
+    -fx-padding: 12px 15px;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.mission-table .table-cell .text {
+    -fx-fill: black !important;
+}
+
+/* Ensure table content is visible */
+.mission-table .virtual-flow .scroll-bar:vertical,
+.mission-table .virtual-flow .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+
+.mission-table .virtual-flow .scroll-bar:vertical .thumb,
+.mission-table .virtual-flow .scroll-bar:horizontal .thumb {
+    -fx-background-color: #c0c0c0;
+    -fx-background-radius: 5px;
+}
+
+/* Button styling */
+.mission-btn {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 25px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.mission-btn:hover {
+    -fx-background-color: #45a049;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+.mission-btn-outline {
+    -fx-background-color: transparent;
+    -fx-text-fill: #f44336;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 9px 24px;
+    -fx-border-color: #f44336;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+}
+
+.mission-btn-outline:hover {
+    -fx-background-color: #f44336;
     -fx-text-fill: white;
 }
 
@@ -290,13 +356,7 @@
 }
 
 .white-text {
-    -fx-text-fill: white;
-}
-
-.mission-h1 {
-    -fx-text-fill: white;
-    -fx-font-size: 26px;
-    -fx-font-weight: bold;
+    -fx-text-fill: #333;  /* Changed from white to dark gray */
 }
 
 .mission-stats-card:hover {
@@ -459,4 +519,179 @@
 
 .mission-text-ellipsis {
     -fx-text-overrun: ELLIPSIS;
+}
+
+/* RENDU LIST SPECIFIC STYLES */
+.rendu-container {
+    -fx-background-color: linear-gradient(to bottom right, #f8fafc, #e2e8f0);
+    -fx-padding: 25;
+}
+
+.rendu-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* TableView Styling for Rendu List */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 4);
+}
+
+.table-view .column-header {
+    -fx-background-color: linear-gradient(to bottom, #3b82f6, #2563eb);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-border-color: #1d4ed8;
+    -fx-border-width: 0 0 2 0;
+    -fx-padding: 12 10;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: transparent;
+    -fx-border-radius: 10 10 0 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #f1f5f9;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10 0;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #f8fafc;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: linear-gradient(to right, #dbeafe, #bfdbfe);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f1f5f9;
+    -fx-cursor: hand;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #334155 !important;  /* Force dark text */
+    -fx-font-size: 13px;
+    -fx-padding: 12 10;
+    -fx-border-color: transparent;
+}
+
+/* Status badges */
+.accepted-badge {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.rejected-badge {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* Score progress bars */
+.score-cell {
+    -fx-alignment: center;
+}
+
+.score-bar {
+    -fx-accent: #3b82f6;
+}
+
+/* Button Styling for Rendu List */
+.rendu-refresh-btn {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.rendu-refresh-btn:hover {
+    -fx-background-color: #2563eb;
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.5), 10, 0, 0, 3);
+}
+
+.rendu-export-btn {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.rendu-export-btn:hover {
+    -fx-background-color: #059669;
+}
+
+.rendu-details-btn {
+    -fx-background-color: #8b5cf6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.rendu-details-btn:hover {
+    -fx-background-color: #7c3aed;
+}
+
+.rendu-delete-btn {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.rendu-delete-btn:hover {
+    -fx-background-color: #dc2626;
+}
+
+/* Filter buttons */
+.rendu-filter-btn, .rendu-stats-btn {
+    -fx-background-color: #94a3b8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+}
+
+.rendu-apply-btn {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-padding: 6 12;
+    -fx-background-radius: 4;
+}
+
+.rendu-clear-btn {
+    -fx-background-color: #94a3b8;
+    -fx-text-fill: white;
+    -fx-padding: 6 12;
+    -fx-background-radius: 4;
 }
