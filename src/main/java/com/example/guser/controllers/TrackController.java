@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import services.*;
@@ -28,6 +29,17 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
+
 
 
 public class TrackController {
@@ -281,6 +293,25 @@ public class TrackController {
             }
 
 
+            Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+            a.setTitle("Create snapshot?");
+            a.setHeaderText("Artifact added");
+            a.setContentText("Do you want to create a snapshot now to freeze this version?");
+            ButtonType now = new ButtonType("Create snapshot");
+            ButtonType later = new ButtonType("Later", ButtonBar.ButtonData.CANCEL_CLOSE);
+            a.getButtonTypes().setAll(now, later);
+
+            Optional<ButtonType> res2 = a.showAndWait();
+            if (res2.isPresent() && res2.get() == now) {
+                onCreateSnapshot();
+                return; // onCreateSnapshot will refresh snapshots + select newest
+            }
+
+// If user chose later: show draft artifacts (no snapshot) so they still “see” it
+            refreshArtifactsUI();
+
+
+
             setError(null);
 
         } catch (Exception e) {
@@ -351,20 +382,27 @@ public class TrackController {
             List<SnapshotItemService.SnapshotArtifactRow> rowsInSnap =
                     snapshotItemService.listArtifactsInSnapshot(s.getId());
 
+            // Build grouped headers from ONLY snapshot artifacts
             List<Artifact> artifacts = rowsInSnap.stream().map(r -> r.artifact).toList();
             List<ArtifactRow> rows = buildGroupedRows(artifacts);
 
-            // Attach fileObjectId from the snapshot list (no missing artifacts now)
+            // Map artifactId -> fileObjectId (guaranteed for your snapshots)
             Map<Integer, Integer> fileIdByArtifactId = new HashMap<>();
             for (var r : rowsInSnap) fileIdByArtifactId.put(r.artifact.getId(), r.fileObjectId);
 
             for (ArtifactRow r : rows) {
-                if (r.kind == ArtifactRowKind.ITEM) r.fileObjectId = fileIdByArtifactId.get(r.artifact.getId());
+                if (r.kind == ArtifactRowKind.ITEM) {
+                    r.fileObjectId = fileIdByArtifactId.get(r.artifact.getId());
+                }
             }
 
             artifactRows.setAll(rows);
 
-            ArtifactRow first = artifactRows.stream().filter(x -> x.kind == ArtifactRowKind.ITEM).findFirst().orElse(null);
+            ArtifactRow first = artifactRows.stream()
+                    .filter(x -> x.kind == ArtifactRowKind.ITEM)
+                    .findFirst()
+                    .orElse(null);
+
             if (first != null) artifactsListView.getSelectionModel().select(first);
             else showPlaceholder("No artifacts in this snapshot.");
 
@@ -373,6 +411,8 @@ public class TrackController {
             setError(e.getMessage());
         }
     }
+
+
 
 
     private List<ArtifactRow> buildGroupedRows(List<Artifact> artifacts) {
@@ -397,27 +437,194 @@ public class TrackController {
 
     private void openArtifact(ArtifactRow row) {
         if (row.fileObjectId == null) {
-            showPlaceholder("No file for this artifact in this snapshot.");
+            showPlaceholder("This artifact has no file in this snapshot.");
             return;
         }
 
         String type = safeUpper(row.artifact.getArtifactType());
         switch (type) {
             case "CODE" -> openCodeArtifact(row.fileObjectId);
-            case "TEXT", "LINK" -> openTextLikeArtifact(row.artifact, row.fileObjectId);
-            default -> showPlaceholder(type + " preview/download: TODO (we’ll implement next).");
+
+            case "TEXT"-> {
+                TextArea ta = new TextArea(row.artifact.getTextContent() == null ? "" : row.artifact.getTextContent());
+                ta.setEditable(false);
+                ta.setWrapText(true);
+
+                Button dl = new Button("Download snapshot file");
+                dl.getStyleClass().add("prf-outlineBtn");
+                dl.setOnAction(e -> {
+                    try {
+                        downloadToDisk(row.fileObjectId, safeFileName(row.artifact.getArtifactName(), "txt"));
+                        setError(null);
+                    } catch (Exception ex) {
+                        setError(ex.getMessage());
+                    }
+                });
+
+                VBox box = new VBox(10, ta, dl);
+                box.getStyleClass().add("wsp-viewBox");
+                artifactViewerHost.getChildren().setAll(box);
+            }
+
+            case "IMAGE" -> openImageArtifact(row.artifact, row.fileObjectId);
+
+            case "DOCUMENT" -> showDownloadPanel(
+                    row.artifact.getArtifactName() + " (Document)",
+                    row.fileObjectId,
+                    safeFileName(row.artifact.getArtifactName(), "pdf")
+            );
+
+            case "VIDEO" -> showDownloadPanel(
+                    row.artifact.getArtifactName() + " (Video)",
+                    row.fileObjectId,
+                    safeFileName(row.artifact.getArtifactName(), "mp4")
+            );
+            case "LINK" -> {
+                String urlText = row.artifact.getTextContent() == null ? "" : row.artifact.getTextContent().trim();
+
+                Hyperlink link = new Hyperlink(urlText.isBlank() ? "(empty link)" : urlText);
+                link.getStyleClass().add("wsp-link");
+                link.setOnAction(e -> {
+                    try {
+                        if (!urlText.isBlank()) com.example.guser.AppHostServices.get().showDocument(urlText);
+                    } catch (Exception ex) {
+                        setError(ex.getMessage());
+                    }
+                });
+
+                Button dl = new Button("Download snapshot file");
+                dl.getStyleClass().add("prf-outlineBtn");
+                dl.setOnAction(e -> {
+                    try {
+                        downloadToDisk(row.fileObjectId, row.artifact.getArtifactName());
+                        setError(null);
+                    } catch (Exception ex) {
+                        setError(ex.getMessage());
+                    }
+                });
+
+                VBox box = new VBox(10, link, dl);
+                box.getStyleClass().add("wsp-viewBox");
+                artifactViewerHost.getChildren().setAll(box);
+            }
+
+
+            default -> showDownloadPanel(
+                    row.artifact.getArtifactName(),
+                    row.fileObjectId,
+                    safeFileName(row.artifact.getArtifactName(), "bin")
+            );
         }
     }
 
+    private static String safeFileName(String base, String extNoDot) {
+        String b = (base == null || base.isBlank()) ? "artifact" : base.trim();
+        b = b.replaceAll("[\\\\/:*?\"<>|]", "_");
+        if (extNoDot != null && !extNoDot.isBlank()) {
+            String ext = extNoDot.toLowerCase();
+            if (!b.toLowerCase().endsWith("." + ext)) b = b + "." + ext;
+        }
+        return b;
+    }
+
+    private void showDownloadPanel(String title, int fileObjectId, String suggestedName) {
+        Label t = new Label(title);
+        t.getStyleClass().add("wsp-viewTitle");
+
+        Button dl = new Button("Download");
+        dl.getStyleClass().add("prf-outlineBtn");
+        dl.setOnAction(e -> {
+            try {
+                downloadToDisk(fileObjectId, suggestedName);
+                setError(null);
+            } catch (Exception ex) {
+                setError(ex.getMessage());
+            }
+        });
+
+        VBox box = new VBox(10, t, dl);
+        box.getStyleClass().add("wsp-viewBox");
+        artifactViewerHost.getChildren().setAll(box);
+    }
+
+    private void openImageArtifact(Artifact artifact, int fileObjectId) {
+        try {
+            FileObject fo = fileObjectService.findById(fileObjectId);
+            if (fo == null) { showPlaceholder("Missing file_object record."); return; }
+
+            String url = fileObjectService.presignedDownloadUrl(fo.getStorageKey(), Duration.ofMinutes(10));
+
+            ImageView iv = new ImageView(new Image(url, true));
+            iv.setPreserveRatio(true);
+            iv.setSmooth(true);
+            // fit inside viewer host, with padding
+            iv.fitWidthProperty().bind(artifactViewerHost.widthProperty().subtract(40));
+            iv.fitHeightProperty().bind(artifactViewerHost.heightProperty().subtract(90));
+            iv.setPickOnBounds(true);
+
+
+            Button dl = new Button("Download");
+            dl.getStyleClass().add("prf-outlineBtn");
+            dl.setOnAction(e -> {
+                try {
+                    downloadToDisk(fileObjectId, safeFileName(artifact.getArtifactName(), "png"));
+                    setError(null);
+                } catch (Exception ex) {
+                    setError(ex.getMessage());
+                }
+            });
+
+            VBox box = new VBox(10, iv, dl);
+            box.getStyleClass().add("wsp-viewBox");
+            artifactViewerHost.getChildren().setAll(box);
+            setError(null);
+        } catch (Exception e) {
+            setError(e.getMessage());
+        }
+    }
+
+
+
     private void openTextLikeArtifact(Artifact artifact, int fileObjectId) {
-        // Your SnapshotService ensures TEXT/LINK snapshots always have a file_object. Great.
-        // For now show artifact textContent (fast). Next iteration can read from S3 file_object to be “true snapshot text”.
-        TextArea ta = new TextArea();
+        String txt = artifact.getTextContent() == null ? "" : artifact.getTextContent();
+
+        TextArea ta = new TextArea(txt);
         ta.setEditable(false);
         ta.setWrapText(true);
-        ta.setText(artifact.getTextContent() == null ? "" : artifact.getTextContent());
-        artifactViewerHost.getChildren().setAll(ta);
+
+        VBox box = new VBox(10);
+        box.getStyleClass().add("wsp-viewBox");
+        box.getChildren().add(ta);
+
+        if ("LINK".equalsIgnoreCase(artifact.getArtifactType())) {
+            Button open = new Button("Open link");
+            open.getStyleClass().add("prf-outlineBtn");
+            open.setOnAction(e -> {
+                try {
+                    String url = txt.trim();
+                    if (!url.isBlank()) com.example.guser.AppHostServices.get().showDocument(url);
+                } catch (Exception ex) {
+                    setError(ex.getMessage());
+                }
+            });
+            box.getChildren().add(open);
+        }
+
+        Button dl = new Button("Download snapshot file");
+        dl.getStyleClass().add("prf-outlineBtn");
+        dl.setOnAction(e -> {
+            try {
+                downloadToDisk(fileObjectId, safeFileName(artifact.getArtifactName(), "txt"));
+                setError(null);
+            } catch (Exception ex) {
+                setError(ex.getMessage());
+            }
+        });
+        box.getChildren().add(dl);
+
+        artifactViewerHost.getChildren().setAll(box);
     }
+
 
     private void openCodeArtifact(int fileObjectId) {
         try {
@@ -427,7 +634,12 @@ public class TrackController {
                 return;
             }
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/code_viewer.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/guser/code_viewer.fxml"));
+            if (loader.getLocation() == null) {
+                showPlaceholder("code_viewer.fxml not found on classpath.");
+                return;
+            }
+
             Node node = loader.load();
 
             CodeViewerController c = loader.getController();
@@ -447,15 +659,40 @@ public class TrackController {
 
     private void installSnapshotCells() {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
         snapshotsListView.setCellFactory(lv -> new ListCell<>() {
             @Override protected void updateItem(Snapshot s, boolean empty) {
                 super.updateItem(s, empty);
-                if (empty || s == null) { setText(null); setGraphic(null); return; }
-                String title = s.getTitle() + (s.isFinal() ? "  •  FINAL" : "");
-                setText(title + "\n" + nullToEmpty(s.getMessage()) + "\n" + fmt.format(s.getCreatedAt()));
+
+                setText(null);
+                setGraphic(null);
+
+                if (empty || s == null) return;
+
+                Label title = new Label(s.getTitle());
+                title.getStyleClass().add("wsp-snapTitle");
+
+                Label msg = new Label(nullToEmpty(s.getMessage()));
+                msg.getStyleClass().add("wsp-snapMsg");
+
+                Label date = new Label(s.getCreatedAt() == null ? "" : fmt.format(s.getCreatedAt()));
+                date.getStyleClass().add("wsp-snapDate");
+
+                Label badge = new Label(s.isFinal() ? "FINAL" : "SNAPSHOT");
+                badge.getStyleClass().add(s.isFinal() ? "wsp-badgeFinal" : "wsp-badge");
+
+                HBox top = new HBox(8, badge, date);
+                top.getStyleClass().add("wsp-snapTop");
+
+                VBox box = new VBox(6, top, title, msg);
+                box.getStyleClass().add("wsp-snapCell");
+
+                setGraphic(box);
             }
         });
     }
+
+
 
     private void installArtifactCells() {
         artifactsListView.setCellFactory(lv -> new ListCell<>() {
@@ -638,6 +875,59 @@ public class TrackController {
 
         return zipPath.toFile();
     }
+
+    private void downloadToDisk(int fileObjectId, String baseNameNoExt) throws Exception {
+        FileObject fo = fileObjectService.findById(fileObjectId);
+        if (fo == null) throw new IllegalStateException("Missing file_object record.");
+
+        String ext = extFromMimeOrKey(fo);
+        String suggested = safeFileName(baseNameNoExt, ext);
+
+        String url = fileObjectService.presignedDownloadUrl(fo.getStorageKey(), Duration.ofMinutes(10));
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save file");
+        if (suggested != null && !suggested.isBlank()) fc.setInitialFileName(suggested);
+
+        var dest = fc.showSaveDialog(trackDetailPane.getScene().getWindow());
+        if (dest == null) return;
+
+        HttpClient client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
+
+        HttpRequest req = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .GET()
+                .build();
+
+        HttpResponse<Path> res = client.send(req, HttpResponse.BodyHandlers.ofFile(dest.toPath()));
+        if (res.statusCode() < 200 || res.statusCode() >= 300) {
+            throw new IllegalStateException("Download failed (HTTP " + res.statusCode() + ")");
+        }
+    }
+
+    private static String extFromMimeOrKey(FileObject fo) {
+        String mt = fo.getMimeType() == null ? "" : fo.getMimeType().toLowerCase();
+        if (mt.contains("pdf")) return "pdf";
+        if (mt.contains("zip")) return "zip";
+        if (mt.contains("png")) return "png";
+        if (mt.contains("jpeg") || mt.contains("jpg")) return "jpg";
+        if (mt.contains("webp")) return "webp";
+        if (mt.contains("mp4")) return "mp4";
+        if (mt.contains("quicktime")) return "mov";
+        if (mt.contains("plain")) return "txt";
+
+        String key = fo.getStorageKey() == null ? "" : fo.getStorageKey();
+        int i = key.lastIndexOf('.');
+        if (i > -1 && i < key.length() - 1) return key.substring(i + 1).toLowerCase();
+
+        return "bin";
+    }
+
+
+
+
 
 
 }

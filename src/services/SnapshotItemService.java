@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
 
+
 public class SnapshotItemService {
     public Connection connection;
 
@@ -27,6 +28,7 @@ public class SnapshotItemService {
     public static class SnapshotArtifactRow {
         public final Artifact artifact;
         public final int fileObjectId;
+
         public SnapshotArtifactRow(Artifact artifact, int fileObjectId) {
             this.artifact = artifact;
             this.fileObjectId = fileObjectId;
@@ -39,6 +41,7 @@ public class SnapshotItemService {
                         "FROM snapshot_item si " +
                         "JOIN artifact a ON a.id = si.artifact_id " +
                         "WHERE si.snapshot_id = ? " +
+                        "AND a.deleted_at IS NULL " +
                         "ORDER BY a.created_at ASC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -54,6 +57,7 @@ public class SnapshotItemService {
                     a.setArtifactType(rs.getString("artifact_type"));
                     a.setLanguage(rs.getString("language"));
                     a.setTextContent(rs.getString("test_content"));
+
                     Timestamp created = rs.getTimestamp("created_at");
                     if (created != null) a.setCreatedAt(created.toLocalDateTime());
                     Timestamp del = rs.getTimestamp("deleted_at");
@@ -66,6 +70,7 @@ public class SnapshotItemService {
             }
         }
     }
+
 
 
 

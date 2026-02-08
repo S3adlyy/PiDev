@@ -83,3 +83,61 @@
     -fx-background-radius: 10;
     -fx-border-radius: 10;
 }
+
+.wsp-snapCell { -fx-padding: 10 12 10 12; }
+.wsp-snapTop { -fx-alignment: center-left; }
+
+.wsp-snapTitle {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 12px;
+}
+
+.wsp-snapMsg {
+    -fx-text-fill: rgba(35,25,66,0.62);
+    -fx-font-weight: 800;
+    -fx-font-size: 11px;
+}
+
+.wsp-snapDate {
+    -fx-text-fill: rgba(35,25,66,0.55);
+    -fx-font-weight: 800;
+    -fx-font-size: 10px;
+}
+
+.wsp-badge {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 10px;
+    -fx-background-color: rgba(159,134,192,0.22);
+    -fx-border-color: rgba(94,84,142,0.22);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 2 8 2 8;
+}
+
+.wsp-badgeFinal {
+    -fx-text-fill: #231942;
+    -fx-font-weight: 900;
+    -fx-font-size: 10px;
+    -fx-background-color: rgba(224,177,203,0.28);
+    -fx-border-color: rgba(190,149,196,0.45);
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-padding: 2 8 2 8;
+}
+
+.wsp-viewBox {
+    -fx-background-color: rgba(255,255,255,0.72);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+    -fx-padding: 12;
+}
+
+.wsp-viewTitle { -fx-text-fill: #231942; -fx-font-weight: 900; }
+.wsp-link {
+    -fx-font-weight: 900;
+    -fx-text-fill: #5E548E;
+}
+.wsp-link:hover { -fx-underline: true; }
