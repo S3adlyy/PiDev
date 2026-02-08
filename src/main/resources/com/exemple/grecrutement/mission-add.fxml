@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.exemple.grecrutement.MissionAddController"
+           stylesheets="@mission-styles.css">
+
+    <VBox spacing="30"
+          alignment="CENTER"
+          styleClass="mission-form-container ,white-text-container mission-table-container"
+          maxWidth="700">
+
+        <!-- TITLE -->
+        <Label text="➕ Add New Mission" styleClass="mission-h1"/>
+
+        <!-- Form Grid -->
+        <GridPane hgap="20" vgap="18">
+            <columnConstraints>
+                <ColumnConstraints prefWidth="140" halignment="RIGHT"/>
+                <ColumnConstraints prefWidth="320"/>
+                <ColumnConstraints prefWidth="200"/>
+            </columnConstraints>
+
+            <!-- Description -->
+            <Label text="Description:"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="0"
+                   styleClass="mission-form-label"/>
+
+            <TextField fx:id="descriptionField"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="0"
+                       styleClass="mission-input"/>
+
+            <Label text="Enter detailed mission description"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="0"
+                   styleClass="mission-form-hint"/>
+
+            <!-- Minimum Score -->
+            <Label text="Minimum Score:"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="1"
+                   styleClass="mission-form-label"/>
+
+            <TextField fx:id="scoreField"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="1"
+                       styleClass="mission-input"/>
+
+            <Label text="Required score threshold (0–100)"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="1"
+                   styleClass="mission-form-hint"/>
+
+            <!-- Creator ID -->
+            <Label text="Creator ID:"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="2"
+                   styleClass="mission-form-label"/>
+
+            <TextField fx:id="createdByIdField"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="2"
+                       styleClass="mission-input"/>
+
+            <Label text="User ID of mission creator"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="2"
+                   styleClass="mission-form-hint"/>
+        </GridPane>
+
+        <!-- Action Buttons -->
+        <HBox spacing="20" alignment="CENTER">
+            <Button text="➕ Add Mission"
+                    onAction="#ajouterMission"
+                    styleClass="mission-btn"/>
+        </HBox>
+
+    </VBox>
+</StackPane>

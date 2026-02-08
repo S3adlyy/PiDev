@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.exemple.grecrutement.RenduAddController"
+      spacing="20"
+      alignment="TOP_CENTER"
+      styleClass="mission-form-container">
+
+    <Label text="🤖 AI Code Submission" styleClass="mission-h1"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="ID Candidat:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtCandidatId" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                   promptText="Entrez ID candidat"/>
+
+        <Label text="ID Mission:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtMissionId" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                   promptText="Entrez ID mission"/>
+
+        <Label text="Type Mission:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="comboMissionType" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                  prefWidth="150"/>
+    </GridPane>
+
+    <TextArea fx:id="txtCode"
+              prefRowCount="14"
+              promptText="Write Python code here..."
+              styleClass="mission-input"/>
+
+    <HBox spacing="15">
+        <Button text="🚀 Evaluate"
+                onAction="#evaluer"
+                styleClass="mission-btn-ai"/>
+
+        <ProgressIndicator fx:id="progress"
+                           visible="false"/>
+    </HBox>
+
+    <Label fx:id="lblResultat"
+           text="Waiting..."
+           styleClass="mission-muted"/>
+</VBox>

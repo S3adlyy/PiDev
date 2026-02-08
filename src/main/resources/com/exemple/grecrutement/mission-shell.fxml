@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.exemple.grecrutement.MissionShellController"
+            stylesheets="@mission-styles.css"
+            styleClass="mission-bg">
+
+    <!-- NAVBAR -->
+    <top>
+        <HBox spacing="15"
+              alignment="CENTER"
+              styleClass="mission-header">
+
+            <Button text="➕ Add Mission"
+                    onAction="#showAddMission"
+                    styleClass="mission-btn"/>
+
+            <Button text="📋 Mission List"
+                    onAction="#showMissionList"
+                    styleClass="mission-btn-outline"/>
+
+            <Button text="🤖 Submit Rendu"
+                    onAction="#showRenduAdd"
+                    styleClass="mission-btn"/>
+
+            <Button text="📑 Rendu List"
+                    onAction="#showRenduList"
+                    styleClass="mission-btn-outline"/>
+        </HBox>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <StackPane fx:id="contentPane"/>
+    </center>
+
+</BorderPane>

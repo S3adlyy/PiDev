@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Button?>
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.exemple.grecrutement.MissionListController"
+      spacing="25"
+      alignment="TOP_CENTER"
+      styleClass="mission-table-container">
+
+    <!-- TITLE -->
+    <Label text="📋 Mission List" styleClass="mission-h1"/>
+
+    <!-- TABLE -->
+    <TableView fx:id="missionTable"
+               prefWidth="900"
+               styleClass="mission-table">
+
+        <columns>
+            <TableColumn fx:id="idColumn" text="ID" prefWidth="80"/>
+            <TableColumn fx:id="descriptionColumn" text="Description" prefWidth="420"/>
+            <TableColumn fx:id="scoreColumn" text="Min Score" prefWidth="120"/>
+            <TableColumn fx:id="creatorColumn" text="Creator ID" prefWidth="120"/>
+        </columns>
+    </TableView>
+
+    <!-- ACTION BUTTONS -->
+    <HBox spacing="20" alignment="CENTER">
+        <Button text="✏️ Edit"
+                onAction="#editMission"
+                styleClass="mission-btn"/>
+
+        <Button text="🗑️ Delete"
+                onAction="#deleteMission"
+                styleClass="mission-btn-outline"/>
+    </HBox>
+
+</VBox>

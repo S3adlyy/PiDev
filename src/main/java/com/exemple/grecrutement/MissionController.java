@@ -259,6 +259,15 @@ public class MissionController implements Initializable {
         }
     }
 
+    public void initialize() {
+        // Load the CSS file
+        String css = this.getClass().getResource("/path/to/mission-styles.css").toExternalForm();
+        missionTable.getStylesheets().add(css);
+
+        // Or if you want to apply to the whole scene
+        // scene.getStylesheets().add(css);
+    }
+
     @FXML
     private void viderChamps() {
         idField.clear();

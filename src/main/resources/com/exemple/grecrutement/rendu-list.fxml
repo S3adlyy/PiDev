@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.exemple.grecrutement.RenduListController"
+      spacing="20"
+      styleClass="mission-table-container">
+
+    <Label text="📑 Rendu History" styleClass="mission-h1"/>
+
+    <TableView fx:id="table">
+        <columns>
+            <TableColumn fx:id="colId" text="ID"/>
+            <TableColumn fx:id="colScore" text="Score"/>
+            <TableColumn fx:id="colResultat" text="Result"/>
+            <TableColumn fx:id="colMission" text="Mission"/>
+            <TableColumn fx:id="colCandidat" text="Candidat"/>
+        </columns>
+    </TableView>
+
+    <Button text="🔄 Refresh"
+            onAction="#load"
+            styleClass="mission-btn-secondary"/>
+</VBox>
