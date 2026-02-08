@@ -141,3 +141,32 @@
     -fx-text-fill: #5E548E;
 }
 .wsp-link:hover { -fx-underline: true; }
+
+
+
+.wsp-codeHost {
+    -fx-background-color: white;
+    -fx-border-color: rgba(35,25,66,0.10);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 8;
+}
+
+/* RichTextFX uses .text as the rendered text */
+.wsp-codeHost .text {
+    -fx-font-family: "Consolas", "JetBrains Mono", "Monospaced";
+    -fx-font-size: 12px;
+}
+
+/* Basic token styles (you can refine later) */
+.kw { -fx-fill: #5E548E; -fx-font-weight: 900; }
+.str { -fx-fill: #BE95C4; }
+.com { -fx-fill: rgba(35,25,66,0.45); }
+.num { -fx-fill: #9F86C0; }
+.typ { -fx-fill: #231942; -fx-font-weight: 900; }
+
+/* Line numbers area */
+.lineno {
+    -fx-background-color: rgba(35,25,66,0.03);
+    -fx-padding: 0 8 0 8;
+}

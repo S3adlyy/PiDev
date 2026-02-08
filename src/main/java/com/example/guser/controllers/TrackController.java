@@ -379,38 +379,32 @@ public class TrackController {
 
     private void refreshArtifactsForSnapshot(Snapshot s) {
         try {
-            List<SnapshotItemService.SnapshotArtifactRow> rowsInSnap =
-                    snapshotItemService.listArtifactsInSnapshot(s.getId());
-
-            // Build grouped headers from ONLY snapshot artifacts
-            List<Artifact> artifacts = rowsInSnap.stream().map(r -> r.artifact).toList();
+            List<Artifact> artifacts = artifactService.listActiveByTrack(track.getId());
             List<ArtifactRow> rows = buildGroupedRows(artifacts);
-
-            // Map artifactId -> fileObjectId (guaranteed for your snapshots)
-            Map<Integer, Integer> fileIdByArtifactId = new HashMap<>();
-            for (var r : rowsInSnap) fileIdByArtifactId.put(r.artifact.getId(), r.fileObjectId);
 
             for (ArtifactRow r : rows) {
                 if (r.kind == ArtifactRowKind.ITEM) {
-                    r.fileObjectId = fileIdByArtifactId.get(r.artifact.getId());
+                    int fileObjectId = snapshotItemService.findFileObjectId(s.getId(), r.artifact.getId());
+                    r.fileObjectId = (fileObjectId == 0 ? null : fileObjectId);
                 }
             }
 
             artifactRows.setAll(rows);
 
-            ArtifactRow first = artifactRows.stream()
-                    .filter(x -> x.kind == ArtifactRowKind.ITEM)
+            ArtifactRow firstWithVersion = artifactRows.stream()
+                    .filter(r -> r.kind == ArtifactRowKind.ITEM && r.fileObjectId != null)
                     .findFirst()
                     .orElse(null);
 
-            if (first != null) artifactsListView.getSelectionModel().select(first);
-            else showPlaceholder("No artifacts in this snapshot.");
+            if (firstWithVersion != null) artifactsListView.getSelectionModel().select(firstWithVersion);
+            else showPlaceholder("No artifact versions captured in this snapshot yet.");
 
             setError(null);
         } catch (SQLException e) {
             setError(e.getMessage());
         }
     }
+
 
 
 
@@ -698,8 +692,6 @@ public class TrackController {
         artifactsListView.setCellFactory(lv -> new ListCell<>() {
             @Override protected void updateItem(ArtifactRow row, boolean empty) {
                 super.updateItem(row, empty);
-
-                // Always reset cell state because cells are reused
                 setText(null);
                 setGraphic(null);
                 setDisable(false);
@@ -715,11 +707,17 @@ public class TrackController {
                 }
 
                 String lang = row.artifact.getLanguage() == null ? "" : (" • " + row.artifact.getLanguage());
-                String availability = (row.fileObjectId == null ? " • (not in this snapshot)" : "");
-                setText(row.artifact.getArtifactName() + "\n" + row.artifact.getArtifactType() + lang + availability);
+                String base = row.artifact.getArtifactName() + "\n" + row.artifact.getArtifactType() + lang;
+
+                if (row.fileObjectId == null && selectedSnapshot != null) {
+                    setText(base + "  (no version in this snapshot)");
+                } else {
+                    setText(base);
+                }
             }
         });
     }
+
 
 
     private void setError(String msg) {
@@ -880,27 +878,18 @@ public class TrackController {
         FileObject fo = fileObjectService.findById(fileObjectId);
         if (fo == null) throw new IllegalStateException("Missing file_object record.");
 
-        String ext = extFromMimeOrKey(fo);
-        String suggested = safeFileName(baseNameNoExt, ext);
-
         String url = fileObjectService.presignedDownloadUrl(fo.getStorageKey(), Duration.ofMinutes(10));
+        String ext = extFromMimeOrKey(fo); // see below
+        String suggested = safeFileName(baseNameNoExt, ext);
 
         FileChooser fc = new FileChooser();
         fc.setTitle("Save file");
-        if (suggested != null && !suggested.isBlank()) fc.setInitialFileName(suggested);
-
-        var dest = fc.showSaveDialog(trackDetailPane.getScene().getWindow());
+        fc.setInitialFileName(suggested);
+        File dest = fc.showSaveDialog(trackDetailPane.getScene().getWindow());
         if (dest == null) return;
 
-        HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .build();
-
-        HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
-
+        HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
+        HttpRequest req = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
         HttpResponse<Path> res = client.send(req, HttpResponse.BodyHandlers.ofFile(dest.toPath()));
         if (res.statusCode() < 200 || res.statusCode() >= 300) {
             throw new IllegalStateException("Download failed (HTTP " + res.statusCode() + ")");
@@ -909,8 +898,8 @@ public class TrackController {
 
     private static String extFromMimeOrKey(FileObject fo) {
         String mt = fo.getMimeType() == null ? "" : fo.getMimeType().toLowerCase();
-        if (mt.contains("pdf")) return "pdf";
         if (mt.contains("zip")) return "zip";
+        if (mt.contains("pdf")) return "pdf";
         if (mt.contains("png")) return "png";
         if (mt.contains("jpeg") || mt.contains("jpg")) return "jpg";
         if (mt.contains("webp")) return "webp";
@@ -920,10 +909,10 @@ public class TrackController {
 
         String key = fo.getStorageKey() == null ? "" : fo.getStorageKey();
         int i = key.lastIndexOf('.');
-        if (i > -1 && i < key.length() - 1) return key.substring(i + 1).toLowerCase();
-
+        if (i > 0 && i < key.length() - 1) return key.substring(i + 1).toLowerCase();
         return "bin";
     }
+
 
 
 

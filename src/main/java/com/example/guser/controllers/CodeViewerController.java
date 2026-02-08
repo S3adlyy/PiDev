@@ -2,45 +2,117 @@ package com.example.guser.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
 import services.CodeBrowseService;
 import services.FileObjectService;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.time.Duration;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class CodeViewerController {
 
-    public record ZipEntryVM(String name, String fullPath, boolean directory) {
-        @Override public String toString() { return name; } // default label if no cellFactory
-    }
-
     @FXML private SplitPane codeSplitPane;
-    @FXML private Button downloadZipBtn;
 
+    @FXML private Button downloadZipBtn;
     @FXML private TreeView<ZipEntryVM> filesTreeView;
 
     @FXML private Label filePathLabel;
     @FXML private Button downloadFileBtn;
-    @FXML private TextArea codeTextArea;
+
+    @FXML private StackPane codeAreaHost;
+
+    private CodeArea codeArea;
 
     private CodeBrowseService codeBrowseService;
     private FileObjectService fileObjectService;
 
     private String storageKey;
-    private Path zipPath;
+    private Path zipPath; // temp downloaded zip
+
     private String selectedEntryPath;
+
+    public record ZipEntryVM(String name, String fullPath, boolean directory) {
+        @Override public String toString() { return name; }
+    }
+
+    // --- Highlighting patterns (simple but effective) ---
+    private static final Set<String> JAVA_KW = Set.of(
+            "abstract","assert","boolean","break","byte","case","catch","char","class","const","continue",
+            "default","do","double","else","enum","extends","final","finally","float","for","goto","if",
+            "implements","import","instanceof","int","interface","long","native","new","package","private",
+            "protected","public","return","short","static","strictfp","super","switch","synchronized",
+            "this","throw","throws","transient","try","void","volatile","while"
+    );
+
+    private static final Set<String> JS_KW = Set.of(
+            "break","case","catch","class","const","continue","debugger","default","delete","do","else",
+            "export","extends","finally","for","function","if","import","in","instanceof","new","return",
+            "super","switch","this","throw","try","typeof","var","void","while","with","yield","let","await"
+    );
+
+    private static final Set<String> PY_KW = Set.of(
+            "False","None","True","and","as","assert","async","await","break","class","continue","def",
+            "del","elif","else","except","finally","for","from","global","if","import","in","is","lambda",
+            "nonlocal","not","or","pass","raise","return","try","while","with","yield"
+    );
+
+    private static final Set<String> SQL_KW = Set.of(
+            "select","from","where","join","inner","left","right","full","on","group","by","order","limit",
+            "insert","into","values","update","set","delete","create","table","primary","key","foreign",
+            "constraint","drop","alter","add","index"
+    );
+
+
+    private static final Pattern STRING_P = Pattern.compile(
+            "\"([^\"\\\\]|\\\\.)*\"|'([^'\\\\]|\\\\.)*'"
+    );
+    private static final Pattern COMMENT_P = Pattern.compile(
+            "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/" + "|" + "#[^\n]*"
+    );
+    private static final Pattern NUMBER_P = Pattern.compile("\\b\\d+(\\.\\d+)?\\b");
+    private static final Pattern TYPE_P = Pattern.compile("\\b[A-Z][A-Za-z0-9_]*\\b");
 
     @FXML
     private void initialize() {
-        // Render only the name in the tree
+        // CodeArea setup
+        codeArea = new CodeArea();
+        codeArea.setEditable(false);
+        codeArea.getStyleClass().add("wsp-codeArea");
+
+        // Line numbers
+        codeArea.setParagraphGraphicFactory(line -> {
+            var n = LineNumberFactory.get(codeArea).apply(line);
+            n.getStyleClass().add("lineno");
+            return n;
+        }); // LineNumberFactory is the standard RichTextFX way. [web:833]
+
+        codeAreaHost.getChildren().setAll(codeArea);
+
+        // Tree rendering
         filesTreeView.setCellFactory(tv -> new TreeCell<>() {
             @Override protected void updateItem(ZipEntryVM v, boolean empty) {
                 super.updateItem(v, empty);
                 if (empty || v == null) { setText(null); return; }
                 setText(v.name());
-                // Optional: you can style directories differently here later
             }
         });
 
@@ -52,7 +124,6 @@ public class CodeViewerController {
         });
 
         filePathLabel.setText("—");
-        codeTextArea.clear();
         downloadFileBtn.setDisable(true);
     }
 
@@ -66,7 +137,6 @@ public class CodeViewerController {
 
         TreeItem<ZipEntryVM> root = new TreeItem<>(new ZipEntryVM("root", "", true));
         root.setExpanded(true);
-
         for (CodeBrowseService.ZipNode child : rootNode.getChildren()) {
             root.getChildren().add(toTreeItem(child));
         }
@@ -74,7 +144,7 @@ public class CodeViewerController {
         filesTreeView.setRoot(root);
         filesTreeView.setShowRoot(false);
 
-        // Default: README.md if at root, else first file (your requirement)
+        // Default open: README.md else first file
         Optional<String> readme = codeBrowseService.findReadmeAtRoot(rootNode);
         if (readme.isPresent()) {
             openFile(readme.get());
@@ -85,9 +155,7 @@ public class CodeViewerController {
 
     private TreeItem<ZipEntryVM> toTreeItem(CodeBrowseService.ZipNode n) {
         TreeItem<ZipEntryVM> item = new TreeItem<>(new ZipEntryVM(n.getName(), n.getFullPath(), n.isDirectory()));
-        for (CodeBrowseService.ZipNode c : n.getChildren()) {
-            item.getChildren().add(toTreeItem(c));
-        }
+        for (CodeBrowseService.ZipNode c : n.getChildren()) item.getChildren().add(toTreeItem(c));
         return item;
     }
 
@@ -97,29 +165,159 @@ public class CodeViewerController {
             selectedEntryPath = entryPath;
 
             filePathLabel.setText(entryPath);
-            codeTextArea.setText(content);
             downloadFileBtn.setDisable(false);
+
+            codeArea.replaceText(content);
+            applyHighlighting(content, entryPath);
+
         } catch (Exception e) {
             filePathLabel.setText(entryPath);
-            codeTextArea.setText("Failed to open file: " + e.getMessage());
             downloadFileBtn.setDisable(true);
+            codeArea.replaceText("Failed to open file: " + e.getMessage());
         }
+    }
+
+    private void applyHighlighting(String text, String entryPath) {
+        String ext = extFromPath(entryPath);
+
+        Set<String> kwSet;
+        switch (ext) {
+            case "java" -> kwSet = JAVA_KW;
+            case "js", "ts" -> kwSet = JS_KW;
+            case "py" -> kwSet = PY_KW;
+            case "sql" -> kwSet = SQL_KW;
+            case "xml", "fxml", "html" -> kwSet = Collections.emptySet(); // only strings/comments
+            default -> {
+                // No highlight for md/json/txt/etc if you want it calmer
+                codeArea.setStyleSpans(0, emptySpans(text.length()));
+                return;
+            }
+        }
+
+        StyleSpans<Collection<String>> spans = computeSpans(text, kwSet);
+        codeArea.setStyleSpans(0, spans);
+    }
+
+    private StyleSpans<Collection<String>> emptySpans(int len) {
+        return new StyleSpansBuilder<Collection<String>>()
+                .add(Collections.emptyList(), len)
+                .create();
+    }
+
+    private StyleSpans<Collection<String>> computeSpans(String text, Set<String> kwSet) {
+        // Build dynamic keyword regex for this language
+        String keywordPattern = kwSet.isEmpty()
+                ? "(?!)"
+                : "\\b(" + String.join("|", kwSet) + ")\\b";
+
+        Pattern pattern = Pattern.compile(
+                "(?<COM>" + COMMENT_P.pattern() + ")"
+                        + "|(?<STR>" + STRING_P.pattern() + ")"
+                        + "|(?<NUM>" + NUMBER_P.pattern() + ")"
+                        + "|(?<KW>" + keywordPattern + ")"
+        );
+
+        Matcher matcher = pattern.matcher(text);
+        int last = 0;
+        StyleSpansBuilder<Collection<String>> b = new StyleSpansBuilder<>();
+
+        while (matcher.find()) {
+            String style =
+                    matcher.group("COM") != null ? "com" :
+                            matcher.group("STR") != null ? "str" :
+                                    matcher.group("NUM") != null ? "num" :
+                                            matcher.group("KW")  != null ? "kw"  :
+                                                    null;
+
+            b.add(Collections.emptyList(), matcher.start() - last);
+            b.add(Collections.singleton(style), matcher.end() - matcher.start());
+            last = matcher.end();
+        }
+        b.add(Collections.emptyList(), text.length() - last);
+        return b.create();
+    }
+
+
+    private static String extFromPath(String p) {
+        if (p == null) return "";
+        int i = p.lastIndexOf('.');
+        if (i < 0 || i == p.length() - 1) return "";
+        return p.substring(i + 1).toLowerCase();
     }
 
     @FXML
     private void onDownloadZip() {
         try {
+            if (storageKey == null || storageKey.isBlank()) throw new IllegalStateException("Missing storageKey.");
+
             String url = fileObjectService.presignedDownloadUrl(storageKey, Duration.ofMinutes(10));
-            // For now: show URL; later we open it in browser or download to disk
-            codeTextArea.setText("Download URL:\n" + url);
+
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Save ZIP");
+            fc.setInitialFileName("repo.zip");
+            File dest = fc.showSaveDialog(codeSplitPane.getScene().getWindow());
+            if (dest == null) return;
+
+            HttpClient client = HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .build();
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
+
+            HttpResponse<Path> res = client.send(req, HttpResponse.BodyHandlers.ofFile(dest.toPath()));
+            if (res.statusCode() < 200 || res.statusCode() >= 300) {
+                throw new IllegalStateException("Download failed (HTTP " + res.statusCode() + ")");
+            }
         } catch (Exception e) {
-            codeTextArea.setText("Failed: " + e.getMessage());
+            codeArea.replaceText("Download ZIP failed: " + e.getMessage());
         }
     }
 
     @FXML
     private void onDownloadFile() {
-        // Next iteration: choose save location and extract the selected entry to disk.
+        try {
+            if (zipPath == null) throw new IllegalStateException("ZIP not loaded.");
+            if (selectedEntryPath == null || selectedEntryPath.isBlank()) throw new IllegalStateException("No file selected.");
+
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Save file");
+            fc.setInitialFileName(Paths.get(selectedEntryPath).getFileName().toString());
+            File dest = fc.showSaveDialog(codeSplitPane.getScene().getWindow());
+            if (dest == null) return;
+
+            byte[] bytes = readBytesFromZip(zipPath, selectedEntryPath);
+            Files.write(dest.toPath(), bytes);
+        } catch (Exception e) {
+            codeArea.replaceText("Download file failed: " + e.getMessage());
+        }
+    }
+
+    private byte[] readBytesFromZip(Path zip, String entryPath) throws IOException {
+        String wanted = normalize(entryPath);
+
+        try (InputStream in = Files.newInputStream(zip);
+             ZipInputStream zis = new ZipInputStream(in)) {
+
+            ZipEntry e;
+            while ((e = zis.getNextEntry()) != null) {
+                if (e.isDirectory()) continue;
+                String name = normalize(e.getName());
+                if (wanted.equals(name)) {
+                    return zis.readAllBytes();
+                }
+            }
+        }
+        throw new FileNotFoundException("File not found in zip: " + entryPath);
+    }
+
+    private static String normalize(String p) {
+        if (p == null) return "";
+        p = p.replace("\\", "/").trim();
+        while (p.startsWith("/")) p = p.substring(1);
+        return p;
     }
 
     public void dispose() {

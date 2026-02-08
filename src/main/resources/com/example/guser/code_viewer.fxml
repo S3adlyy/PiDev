@@ -31,6 +31,6 @@
                     styleClass="prf-outlineBtn"/>
         </HBox>
 
-        <TextArea fx:id="codeTextArea" editable="false" wrapText="false" styleClass="wsp-codeArea" VBox.vgrow="ALWAYS"/>
+        <StackPane fx:id="codeAreaHost" VBox.vgrow="ALWAYS" styleClass="wsp-codeHost"/>
     </VBox>
 </SplitPane>

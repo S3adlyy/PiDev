@@ -9,6 +9,7 @@ module com.example.guser {
     requires software.amazon.awssdk.auth;
     //requires com.example.guser;
     requires java.net.http;
+    requires org.fxmisc.richtext;
 
 
     opens com.example.guser to javafx.fxml;
